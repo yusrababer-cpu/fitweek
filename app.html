@@ -1,0 +1,555 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Free Workout and Meal Plan Builder | BMI, Calorie Finder, Progress Tracker | FitWeek</title>
+<meta name="description" content="Build your free 5-day workout and meal plan. Calculate BMI and daily calories, get strength, yoga, Tai Chi and meditation sessions, look up calories in common foods and track progress.">
+<link rel="canonical" href="https://fitweek-plan.netlify.app/app.html">
+<meta name="robots" content="index, follow">
+<meta property="og:type" content="website">
+<meta property="og:title" content="FitWeek Free Plan Builder: workouts, meals and calories">
+<meta property="og:description" content="Enter your height, weight and goal. Get a 5-day plan with strength, yoga, Tai Chi, meditation and meals with calories.">
+<meta property="og:url" content="https://fitweek-plan.netlify.app/app.html">
+<style>
+:root{--g:#1F5C57;--g2:#2c7a73;--bg:#F4F8F6;--ink:#17302D;--mut:#5b716e;--card:#fff;--line:#dbe6e3;--warn:#fff6e0;--acc:#e8f3f1}
+*{box-sizing:border-box}
+body{margin:0;font-family:system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;background:var(--bg);color:var(--ink);line-height:1.55}
+a{color:var(--g)}
+header{background:var(--g);color:#fff;padding:14px 20px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px}
+header a{color:#fff;text-decoration:none}
+.logo{font-weight:800;font-size:1.3rem;letter-spacing:.3px}
+.tabs{display:flex;gap:6px;flex-wrap:wrap;max-width:980px;margin:16px auto 0;padding:0 16px}
+.tab{border:1px solid var(--line);background:#fff;color:var(--ink);padding:10px 16px;border-radius:999px;font-size:.95rem;cursor:pointer;font-weight:600}
+.tab.on{background:var(--g);color:#fff;border-color:var(--g)}
+main{max-width:980px;margin:0 auto;padding:16px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:20px;margin-bottom:16px}
+h1{font-size:1.6rem;margin:6px 0 4px}
+h2{font-size:1.25rem;margin:0 0 10px}
+h3{font-size:1.05rem;margin:14px 0 6px}
+.mut{color:var(--mut);font-size:.92rem}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:12px}
+label{display:block;font-weight:600;font-size:.92rem;margin-bottom:4px}
+input,select{width:100%;padding:10px 12px;border:1px solid #b9ccc8;border-radius:10px;font-size:1rem;background:#fff;color:var(--ink)}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chips label{display:flex;align-items:center;gap:6px;border:1px solid #b9ccc8;border-radius:999px;padding:7px 12px;font-weight:500;margin:0;cursor:pointer;background:#fff}
+.chips input{width:auto}
+button.btn,a.btn{background:var(--g);color:#fff;border:0;border-radius:12px;padding:12px 22px;font-size:1rem;font-weight:700;cursor:pointer;text-decoration:none;display:inline-block}
+button.btn:hover{background:var(--g2)}
+button.ghost{background:#fff;color:var(--g);border:1px solid var(--g);border-radius:10px;padding:7px 12px;cursor:pointer;font-weight:600}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin:10px 0}
+.stat{background:var(--acc);border-radius:14px;padding:14px}
+.stat b{display:block;font-size:1.6rem;color:var(--g)}
+.stat span{font-size:.85rem;color:var(--mut)}
+.note{background:var(--warn);border:1px solid #f0dca0;border-radius:12px;padding:12px 14px;font-size:.9rem;margin:10px 0}
+.err{background:#fde8e8;border:1px solid #f0b4b4;border-radius:12px;padding:12px 14px;margin:10px 0;color:#7a1d1d}
+table{width:100%;border-collapse:collapse;font-size:.93rem}
+th,td{text-align:left;padding:8px 6px;border-bottom:1px solid var(--line);vertical-align:top}
+th{color:var(--mut);font-weight:600;font-size:.82rem;text-transform:uppercase;letter-spacing:.4px}
+.day{border:1px solid var(--line);border-radius:14px;margin-bottom:12px;overflow:hidden;background:#fff}
+.day summary{cursor:pointer;padding:14px 16px;font-weight:700;background:var(--acc);list-style:none;display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap}
+.day summary span{font-weight:500;color:var(--mut);font-size:.9rem}
+.day .in{padding:6px 16px 16px}
+.tag{display:inline-block;background:var(--acc);color:var(--g);border-radius:999px;padding:2px 10px;font-size:.78rem;font-weight:700}
+.hide{display:none}
+.right{text-align:right}
+footer{max-width:980px;margin:10px auto 40px;padding:0 16px;color:var(--mut);font-size:.85rem}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+@media print{header,.tabs,footer,.noprint,button{display:none!important}.pane{display:block!important}body{background:#fff}.day{break-inside:avoid}.day .in{display:block}}
+</style>
+</head>
+<body>
+<header>
+<a class="logo" href="/">FitWeek</a>
+<span>Free workout and meal plan builder</span>
+</header>
+
+<div class="tabs" role="tablist">
+<button class="tab on" data-p="build">1. Build my plan</button>
+<button class="tab" data-p="plan">2. My 5-day plan</button>
+<button class="tab" data-p="foods">3. Calorie finder</button>
+<button class="tab" data-p="track">4. Progress</button>
+</div>
+
+<main>
+
+<section class="pane" id="p-build">
+<div class="card">
+<h1>Build your free personal plan</h1>
+<p class="mut">Answer a few questions. Your numbers stay on your device. Nothing is sent anywhere. For adults 18 and over.</p>
+<form id="f" autocomplete="off">
+<div class="grid">
+<div><label for="age">Age (years)</label><input id="age" type="number" min="18" max="90" required placeholder="e.g. 35"></div>
+<div><label for="sex">Sex (for calorie formula)</label><select id="sex"><option value="f">Female</option><option value="m">Male</option></select></div>
+<div><label for="h">Height (cm)</label><input id="h" type="number" min="120" max="230" required placeholder="e.g. 160"></div>
+<div><label for="w">Weight (kg)</label><input id="w" type="number" min="30" max="250" step="0.1" required placeholder="e.g. 70"></div>
+<div><label for="waist">Waist (cm, optional)</label><input id="waist" type="number" min="40" max="200" step="0.1" placeholder="around your navel"></div>
+<div><label for="act">Daily activity (outside workouts)</label>
+<select id="act"><option value="1.2">Mostly sitting</option><option value="1.375" selected>Light (some walking, housework)</option><option value="1.55">Active (on my feet most of the day)</option></select></div>
+<div><label for="goal">Your goal</label>
+<select id="goal"><option value="lose">Lose weight slowly</option><option value="maintain" selected>Stay at my weight and get fitter</option><option value="gain">Build muscle and gain weight</option></select></div>
+<div><label for="lvl">Exercise experience</label>
+<select id="lvl"><option value="beginner">Beginner</option><option value="intermediate">Some experience</option><option value="advanced">Experienced</option></select></div>
+<div><label for="eq">Equipment</label>
+<select id="eq"><option value="n">None (home, bodyweight)</option><option value="d">I have dumbbells</option></select></div>
+<div><label for="diet">Food style</label>
+<select id="diet"><option value="any">I eat everything</option><option value="veg">Vegetarian (eggs and dairy ok)</option></select></div>
+</div>
+<h3>Where do you want to get stronger? (pick any)</h3>
+<div class="chips" id="focus">
+<label><input type="checkbox" value="upper"> Arms and shoulders</label>
+<label><input type="checkbox" value="lower"> Legs and hips</label>
+<label><input type="checkbox" value="core"> Core and back</label>
+<label><input type="checkbox" value="flex"> Flexibility</label>
+<label><input type="checkbox" value="stress"> Calm and stress relief</label>
+</div>
+<h3>Anything we should be careful about? (pick any)</h3>
+<div class="chips" id="care">
+<label><input type="checkbox" value="knee"> Sensitive knees</label>
+<label><input type="checkbox" value="back"> Lower back</label>
+<label><input type="checkbox" value="shoulder"> Shoulders</label>
+</div>
+<div class="note"><b>Please read:</b> This app gives general fitness and food guidance, not medical advice. If you are pregnant, recovering from illness or injury, or have a heart, blood pressure, diabetes or other health condition, check with your doctor before starting. Stop if you feel pain, dizziness or chest discomfort.</div>
+<p id="ferr" class="err hide"></p>
+<button class="btn" type="submit">Create my plan</button>
+</form>
+</div>
+</section>
+
+<section class="pane hide" id="p-plan">
+<div id="plan"></div>
+</section>
+
+<section class="pane hide" id="p-foods">
+<div class="card">
+<h2>Calorie finder</h2>
+<p class="mut">Search a food, see calories and protein per serving, and tap Add to build today's total. Values are typical averages and will vary with recipe and portion size.</p>
+<div class="grid">
+<div><label for="q">Search food</label><input id="q" type="search" placeholder="egg, rice, lentil, banana..."></div>
+<div><label for="cat">Category</label><select id="cat"></select></div>
+</div>
+</div>
+<div class="card">
+<h2>Today's total: <span id="tot">0</span> kcal <span class="mut">(protein <span id="totp">0</span> g)</span></h2>
+<div id="mylist" class="mut">Nothing added yet.</div>
+<p><button class="ghost" id="clr" type="button">Clear list</button></p>
+</div>
+<div class="card"><table><thead><tr><th>Food</th><th>Serving</th><th class="right">kcal</th><th class="right">Protein</th><th></th></tr></thead><tbody id="ft"></tbody></table></div>
+</section>
+
+<section class="pane hide" id="p-track">
+<div class="card">
+<h2>Log your progress</h2>
+<p class="mut">Weigh yourself at the same time of day, once or twice a week. Saved only on this device and browser.</p>
+<form id="tf" class="grid" autocomplete="off">
+<div><label for="td">Date</label><input id="td" type="date" required></div>
+<div><label for="tw">Weight (kg)</label><input id="tw" type="number" step="0.1" min="30" max="250" required></div>
+<div><label for="tc">Waist (cm, optional)</label><input id="tc" type="number" step="0.1" min="40" max="200"></div>
+<div><label for="tn">Note (optional)</label><input id="tn" type="text" maxlength="80" placeholder="how I felt"></div>
+<div style="align-self:end"><button class="btn" type="submit">Save entry</button></div>
+</form>
+</div>
+<div class="card"><h2>Your log</h2><div id="tl" class="mut">No entries yet.</div></div>
+<div class="card"><h2>This week's workouts</h2><p class="mut">Tick each day when you finish.</p><div id="wk" class="chips"></div></div>
+</section>
+
+</main>
+
+<footer>
+<p><b>Health notice:</b> FitWeek provides general information only and is not a substitute for medical advice, diagnosis or treatment. BMI is a rough screening guide and does not account for muscle, bone or body shape. Calorie and nutrient values are approximate. You cannot choose where your body loses fat; strength training builds the muscles you work, and overall eating and activity decide fat loss.</p>
+<p>&copy; 2026 FitWeek &middot; <a href="/">Home</a></p>
+</footer>
+
+<script>
+(function(){
+"use strict";
+var $=function(s){return document.querySelector(s)};
+function esc(s){return String(s).replace(/[&<>"']/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[c]})}
+var store={get:function(k){try{return JSON.parse(localStorage.getItem(k))}catch(e){return null}},set:function(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
+
+/* ---------- FOOD DATABASE: id, name, serving, kcal, protein g, category ---------- */
+var FL=[
+["egg","Boiled egg","1 large",78,6,"Eggs and dairy"],
+["omelette","Omelette (2 eggs, 1 tsp oil)","1 omelette",196,12,"Eggs and dairy"],
+["friedegg","Fried egg","1 egg",90,6,"Eggs and dairy"],
+["yogurt","Plain yogurt","1 cup (245 g)",150,8,"Eggs and dairy"],
+["milk","Milk, whole","1 cup",150,8,"Eggs and dairy"],
+["cottage","Cottage cheese, low fat","1/2 cup",90,12,"Eggs and dairy"],
+["paneer","Paneer","50 g",133,9,"Eggs and dairy"],
+["cheese","Cheddar cheese","1 slice (28 g)",113,7,"Eggs and dairy"],
+["tea","Tea with milk, no sugar","1 cup",35,1,"Drinks"],
+["coffee","Black coffee","1 cup",2,0,"Drinks"],
+["cola","Cola or soft drink","1 can (330 ml)",140,0,"Drinks"],
+["juice","Orange juice","1 cup",112,2,"Drinks"],
+["lassi","Sweet lassi","1 glass (250 ml)",200,6,"Drinks"],
+["rice","White rice, cooked","1 cup",205,4,"Grains and bread"],
+["brownrice","Brown rice, cooked","1 cup",216,5,"Grains and bread"],
+["roti","Roti or chapati (whole wheat)","1 medium",104,3,"Grains and bread"],
+["bread","Whole wheat bread","1 slice",80,4,"Grains and bread"],
+["oats","Oats, cooked","1 cup",166,6,"Grains and bread"],
+["cornflakes","Corn flakes","1 cup",100,2,"Grains and bread"],
+["granola","Granola","1/2 cup",200,5,"Grains and bread"],
+["paratha","Paratha, plain","1 medium",260,5,"Grains and bread"],
+["naan","Naan","1 piece",260,8,"Grains and bread"],
+["pasta","Pasta, cooked","1 cup",220,8,"Grains and bread"],
+["sweetpotato","Sweet potato, baked","1 medium",112,2,"Vegetables"],
+["potato","Potato, boiled","1 medium",130,3,"Vegetables"],
+["lentils","Lentils (dal), cooked","1 cup",230,18,"Beans, lentils and proteins"],
+["lentilsoup","Lentil soup","1 bowl",240,12,"Beans, lentils and proteins"],
+["chickpeas","Chickpeas, cooked","1 cup",269,15,"Beans, lentils and proteins"],
+["rajma","Kidney beans (rajma), cooked","1 cup",225,15,"Beans, lentils and proteins"],
+["tofu","Tofu, firm","100 g",76,8,"Beans, lentils and proteins"],
+["chicken","Grilled chicken breast","100 g",165,31,"Beans, lentils and proteins"],
+["chickencurry","Chicken curry","1 cup",240,20,"Beans, lentils and proteins"],
+["fish","White fish, baked","100 g",105,23,"Beans, lentils and proteins"],
+["salmon","Salmon, baked","100 g",206,22,"Beans, lentils and proteins"],
+["mutton","Lamb or mutton curry","1 cup",300,22,"Beans, lentils and proteins"],
+["hummus","Hummus","2 tbsp",70,2,"Beans, lentils and proteins"],
+["peas","Green peas, boiled","1 cup",134,9,"Vegetables"],
+["salad","Mixed salad (no dressing)","1 cup",20,1,"Vegetables"],
+["broccoli","Broccoli, cooked","1 cup",55,4,"Vegetables"],
+["spinach","Spinach, cooked","1 cup",41,5,"Vegetables"],
+["carrot","Carrot, raw","1 medium",25,1,"Vegetables"],
+["tomato","Tomato","1 medium",22,1,"Vegetables"],
+["cucumber","Cucumber","1 cup sliced",16,1,"Vegetables"],
+["mixveg","Mixed vegetable curry","1 cup",120,3,"Vegetables"],
+["banana","Banana","1 medium",105,1,"Fruits"],
+["apple","Apple","1 medium",95,0,"Fruits"],
+["orange","Orange","1 medium",62,1,"Fruits"],
+["mango","Mango","1 cup sliced",100,1,"Fruits"],
+["guava","Guava","1 fruit",37,1,"Fruits"],
+["grapes","Grapes","1 cup",104,1,"Fruits"],
+["watermelon","Watermelon","1 cup",46,1,"Fruits"],
+["berries","Mixed berries","1 cup",70,1,"Fruits"],
+["dates","Dates","2 medium",133,1,"Fruits"],
+["almonds","Almonds","8 nuts",56,2,"Nuts, seeds and fats"],
+["walnuts","Walnuts","28 g",185,4,"Nuts, seeds and fats"],
+["peanuts","Peanuts, roasted","28 g",166,7,"Nuts, seeds and fats"],
+["pb","Peanut butter","1 tbsp",94,4,"Nuts, seeds and fats"],
+["chia","Chia seeds","1 tbsp",58,2,"Nuts, seeds and fats"],
+["avocado","Avocado","1/2 fruit",160,2,"Nuts, seeds and fats"],
+["oil","Cooking oil or olive oil","1 tbsp",119,0,"Nuts, seeds and fats"],
+["ghee","Ghee or butter","1 tsp",40,0,"Nuts, seeds and fats"],
+["samosa","Samosa, fried","1 piece",250,4,"Street food and treats"],
+["pakora","Vegetable pakora","4 pieces",220,5,"Street food and treats"],
+["biryani","Chicken biryani","1 cup",290,14,"Street food and treats"],
+["pizza","Pizza","1 slice",285,12,"Street food and treats"],
+["burger","Fast-food burger","1 burger",350,17,"Street food and treats"],
+["fries","French fries","medium portion",365,4,"Street food and treats"],
+["choc","Chocolate bar","40 g",210,3,"Street food and treats"],
+["icecream","Ice cream","1/2 cup",137,2,"Street food and treats"],
+["gulab","Gulab jamun","1 piece",150,2,"Street food and treats"],
+["biscuit","Plain biscuit","1 piece",50,1,"Street food and treats"],
+["sugar","Sugar","1 tsp",16,0,"Street food and treats"],
+["honey","Honey","1 tsp",21,0,"Street food and treats"]
+];
+var F={};FL.forEach(function(x){F[x[0]]={n:x[1],s:x[2],k:x[3],p:x[4],c:x[5]}});
+
+/* ---------- MEAL IDEAS ---------- */
+var B=[[["omelette",1],["bread",2],["banana",1]],[["oats",1],["banana",1],["chia",1]],[["yogurt",1],["berries",1],["walnuts",0.5]],[["egg",2],["roti",1],["tea",1]],[["lentils",0.5],["roti",1],["cucumber",1],["tea",1]]];
+var L=[[["lentils",1],["rice",1],["salad",1]],[["chicken",1],["roti",2],["salad",1]],[["chickpeas",1],["brownrice",0.5],["salad",1]],[["tofu",1.5],["brownrice",1],["broccoli",1]],[["rajma",1],["rice",0.75],["salad",1]],[["fish",1.5],["roti",1],["mixveg",1]]];
+var D=[[["fish",1.5],["sweetpotato",1],["broccoli",1]],[["chicken",1],["spinach",1],["rice",0.75]],[["lentilsoup",1],["roti",1],["salad",1]],[["paneer",2],["roti",1],["spinach",1]],[["chickpeas",1],["sweetpotato",1],["spinach",1]],[["tofu",1.5],["mixveg",1],["roti",1]]];
+var S=["apple","almonds","yogurt","dates","egg","cottage","banana","hummus","orange","guava"];
+function isMeat(m){return m.some(function(x){return x[0]==="chicken"||x[0]==="fish"||x[0]==="mutton"})}
+
+/* ---------- EXERCISES ---------- */
+/* e: n=no equipment, d=dumbbells, b=both. t=timed hold */
+var UP=[
+{n:"Incline push-ups (hands on a table or wall)",e:"b",h:"Body in one straight line. Lower your chest toward the surface, press away. Use a higher surface to make it easier."},
+{n:"Dumbbell bent-over rows",e:"d",h:"Hinge at the hips, back flat. Pull the weights toward your ribs and squeeze your shoulder blades."},
+{n:"Backpack rows (backpack loaded with books)",e:"n",h:"Hinge forward with a flat back. Pull the bag toward your ribs, lower slowly."},
+{n:"Dumbbell shoulder press",e:"d",h:"Press the weights overhead without arching your back. Lower under control."},
+{n:"Backpack overhead press",e:"n",h:"Hold the backpack at chest height and press it overhead. Keep ribs down."},
+{n:"Dumbbell biceps curls",e:"d",h:"Elbows by your sides. Curl up, lower slowly. No swinging."},
+{n:"Backpack curls",e:"n",h:"Hold the bag by the top handle or both straps and curl it up slowly."},
+{n:"Chair triceps dips",e:"b",h:"Hands on a sturdy chair, bend elbows straight back, then press up. Keep hips close to the chair."},
+{n:"Plank shoulder taps",e:"b",h:"From a plank, tap one shoulder with the opposite hand. Keep hips still."}
+];
+var LO=[
+{n:"Chair squats",e:"b",h:"Sit back to lightly touch a chair, then stand. Knees track over toes."},
+{n:"Goblet squats (hold one dumbbell at your chest)",e:"d",h:"Chest tall, sit between your hips, drive up through your heels."},
+{n:"Reverse lunges",e:"b",h:"Step back, lower until both knees bend about 90 degrees, push through the front heel."},
+{n:"Glute bridges",e:"b",h:"Lie on your back, feet flat. Lift hips, squeeze your glutes, lower slowly."},
+{n:"Dumbbell Romanian deadlift",e:"d",h:"Soft knees, push hips back, flat back, weights slide down your thighs. Stand tall."},
+{n:"Step-ups on a stair",e:"b",h:"Step up with one leg, bring the other up, step down slowly. Switch sides."},
+{n:"Calf raises",e:"b",h:"Rise onto your toes, pause, lower slowly. Hold a wall for balance."},
+{n:"Wall sit",e:"b",t:1,h:"Back against a wall, thighs near parallel. Breathe steadily."}
+];
+var CO=[
+{n:"Plank (on knees or toes)",e:"b",t:1,h:"Straight line from head to hips. Do not let your lower back sag."},
+{n:"Dead bug",e:"b",h:"On your back, arms up, knees bent. Lower opposite arm and leg slowly, keep your back flat."},
+{n:"Bird dog",e:"b",h:"On hands and knees, reach opposite arm and leg long. Hips stay level."},
+{n:"Side plank (on knees or feet)",e:"b",t:1,h:"Elbow under shoulder, lift hips. Each side."},
+{n:"Slow bicycle crunches",e:"b",h:"Slow and controlled. Rotate from the ribs, not by pulling your neck."}
+];
+var CA=[
+"Brisk walk or march in place",
+"Step jacks (low-impact jumping jacks)",
+"Shadow boxing",
+"High knees (march, lift knees to hip height)",
+"Stair climbing or step touches",
+"Side steps with arm swings"
+];
+var YO=[
+["Cat-cow","1 min","On hands and knees, arch and round your spine with your breath."],
+["Downward-facing dog","5 breaths","Hips high, heels reaching down, press the floor away. Bend knees if hamstrings are tight."],
+["Low lunge","5 breaths each side","Back knee down, front knee over ankle, lift your chest."],
+["Warrior II","5 breaths each side","Wide stance, front knee bent over ankle, arms long. Strong legs, soft shoulders."],
+["Cobra","5 breaths","Lie on your belly, lift your chest gently, elbows bent."],
+["Child's pose","1 min","Sit back on your heels, arms forward, rest your forehead down."],
+["Seated forward fold","1 min","Sit tall, hinge at the hips and reach forward. Do not force it."],
+["Legs up the wall","3 min","Lie down with legs resting up a wall. Calming for the legs and mind."]
+];
+var TC=[
+["Opening stance","Feet shoulder-width apart, knees soft, shoulders relaxed. Slow breaths."],
+["Weight shifting","Slowly move weight from one foot to the other with a straight spine."],
+["Wave hands like clouds","Turn your waist and let the arms drift side to side, like moving through water."],
+["Brush knee and push","Step forward, one hand brushes past the knee, the other pushes forward slowly."],
+["Closing form","Lower your hands, stand still, and feel your breath for a few moments."]
+];
+var MIND=[
+["Breath awareness","Sit comfortably. Breathe in for 4 counts, out for 6. When your mind wanders, return to the breath."],
+["Body scan","Lie down. Move attention slowly from your toes to your head, relaxing each part."],
+["Kind wishes","Quietly repeat: may I be calm, may I be well. Then include someone you love."]
+];
+
+var LV={
+beginner:{sets:"2 x 8-10",hold:"2 x 20 sec",cardio:15,yoga:20,tc:10,med:5,n:4},
+intermediate:{sets:"3 x 10-12",hold:"3 x 30 sec",cardio:20,yoga:25,tc:15,med:10,n:5},
+advanced:{sets:"3 x 12-15",hold:"3 x 40 sec",cardio:25,yoga:30,tc:20,med:15,n:5}
+};
+var DAYS=["Monday","Tuesday","Wednesday","Thursday","Friday"];
+
+/* ---------- CALCULATIONS ---------- */
+function calc(p){
+var bmi=p.w/Math.pow(p.h/100,2);
+var bmr=10*p.w+6.25*p.h-5*p.a+(p.sex==="m"?5:-161);
+var tdee=bmr*p.act;
+var goal=p.goal, notes=[];
+var cat=bmi<18.5?"Below the healthy range":bmi<25?"Healthy range":bmi<30?"Above the healthy range":"Well above the healthy range";
+if(bmi<18.5&&goal==="lose"){goal="maintain";notes.push("Your BMI is below the healthy range, so we set your plan to maintain weight. Please speak with a doctor or dietitian before trying to lose weight.")}
+var target=tdee;
+if(goal==="lose")target=tdee-400;
+if(goal==="gain")target=tdee+300;
+var floor=p.sex==="m"?1500:1200;
+if(target<floor){target=floor;notes.push("We never go below "+floor+" kcal a day in this free tool, to keep your plan safe.")}
+target=Math.round(target/10)*10;
+var pk=goal==="gain"?1.4:(goal==="lose"?1.2:1.0);
+var minW=Math.round(18.5*Math.pow(p.h/100,2)*10)/10, maxW=Math.round(24.9*Math.pow(p.h/100,2)*10)/10;
+var wh=p.waist?p.waist/p.h:null;
+return {bmi:bmi,cat:cat,bmr:Math.round(bmr),tdee:Math.round(tdee),target:target,protein:Math.round(pk*p.w),water:Math.round(p.w*0.033*10)/10,minW:minW,maxW:maxW,wh:wh,goal:goal,notes:notes};
+}
+
+/* ---------- WORKOUT BUILDERS ---------- */
+function pick(arr,eq,n,skip){var o=[];for(var i=0;i<arr.length&&o.length<n;i++){var x=arr[i];if(skip&&skip(x))continue;if(x.e==="b"||x.e===eq)o.push(x)}return o}
+function fill(list,arr,eq,n){
+if(list.length>=n)return list;
+var extra=[];
+for(var i=0;i<arr.length&&list.length+extra.length<n;i++){var x=arr[i];if((x.e==="b"||x.e===eq)&&list.indexOf(x)<0){extra.push({n:x.n,e:x.e,t:x.t,h:x.h+" Go gently and skip it if you feel any pain."})}}
+return list.concat(extra);
+}
+function rx(x,lv){return x.t?lv.hold:lv.sets}
+function rowsFrom(list,lv){return list.map(function(x){return {n:x.n,r:rx(x,lv),h:x.h}})}
+function has(a,v){return a.indexOf(v)>-1}
+function buildDays(p){
+var lv=LV[p.lvl],f=p.focus,care=p.care,eq=p.eq;
+var skipKnee=function(x){return has(care,"knee")&&/lunge|step-up|wall sit/i.test(x.n)};
+var skipBack=function(x){return has(care,"back")&&/deadlift|bent-over|rows/i.test(x.n)};
+var skipSh=function(x){return has(care,"shoulder")&&/overhead|shoulder press|dips|push-ups|shoulder taps/i.test(x.n)};
+var d=[];
+/* Mon upper */
+var up=pick(UP,eq,lv.n+(has(f,"upper")?1:0),function(x){return skipBack(x)||skipSh(x)});
+up=fill(up,UP,eq,3);
+var coreAdd=has(f,"core")?pick(CO,eq,1):[];
+d.push({t:"Upper body strength",m:35,k:"strength",
+rows:rowsFrom(up.concat(coreAdd),lv),
+extra:{wu:"5 min: march in place, arm circles, shoulder rolls.",cd:"5 min: chest and shoulder stretch, deep breaths.",mind:["Breath awareness",Math.max(3,lv.med-3)]}});
+/* Tue cardio core */
+var ca=CA.slice(0,4).map(function(x){return {n:x,r:Math.round(lv.cardio/4)+" min",h:"Easy to moderate pace. You should be able to speak in short sentences."}});
+var co=pick(CO,eq,3+(has(f,"core")?1:0),skipBack);
+d.push({t:"Cardio and core",m:lv.cardio+10,k:"cardio",rows:ca.concat(rowsFrom(co,lv)),
+extra:{wu:"3 min: gentle marching and arm swings.",cd:"5 min: slow walking, then light stretching"+(has(f,"flex")?" (add 5 more minutes of stretching).":".") ,mind:has(f,"stress")?["Breath awareness",5]:null}});
+/* Wed yoga */
+var yo=YO.map(function(x){return {n:x[0],r:x[1],h:x[2]}});
+if(has(care,"knee"))yo=yo.filter(function(x){return !/Low lunge/.test(x.n)});
+var med=MIND[has(f,"stress")?1:0];
+d.push({t:"Yoga, mobility and meditation",m:lv.yoga+lv.med,k:"yoga",rows:yo,
+extra:{wu:"Start with 2 minutes of slow breathing.",cd:"Finish lying down for 1 minute.",mind:[med[0],lv.med+(has(f,"stress")?5:0)]}});
+/* Thu lower */
+var lo=pick(LO,eq,lv.n+(has(f,"lower")?1:0),function(x){return skipKnee(x)||skipBack(x)});
+lo=fill(lo,LO,eq,3);
+var coreAdd2=has(f,"core")?pick(CO,eq,2).slice(1):[];
+d.push({t:"Lower body strength",m:35,k:"strength",
+rows:rowsFrom(lo.concat(coreAdd2),lv),
+extra:{wu:"5 min: march in place, hip circles, bodyweight squats.",cd:"5 min: calf, hamstring and hip stretches"+(has(f,"flex")?" (add 5 more minutes).":"."),mind:["Breath awareness",Math.max(3,lv.med-3)]}});
+/* Fri full body + tai chi */
+var fb=[];
+fb=fb.concat(pick(UP,eq,1,function(x){return skipSh(x)||skipBack(x)}));
+fb=fb.concat(pick(LO,eq,1,skipKnee));
+fb=fb.concat(pick(CO,eq,1));
+if(has(f,"upper"))fb=fb.concat(pick(UP,eq,2,function(x){return skipSh(x)||skipBack(x)}).slice(1));
+if(has(f,"lower"))fb=fb.concat(pick(LO,eq,2,skipKnee).slice(1));
+var tc=TC.map(function(x){return {n:"Tai Chi: "+x[0],r:Math.max(2,Math.round(lv.tc/5))+" min",h:x[1]}});
+d.push({t:"Full-body circuit and Tai Chi",m:lv.tc+25,k:"mix",rows:rowsFrom(fb,lv).concat(tc),
+extra:{wu:"5 min: march in place, arm circles.",cd:"Tai Chi closing form, then stretching.",mind:has(f,"stress")?["Kind wishes",5]:null,circuit:"Do the strength moves as a circuit: one set of each, rest 45 sec, repeat for the sets shown."}});
+return d;
+}
+function mealsFor(target,diet,i){
+var Lo=L.filter(function(m){return diet!=="veg"||!isMeat(m)});
+var Do=D.filter(function(m){return diet!=="veg"||!isMeat(m)});
+var b=B[i%B.length],l=Lo[(i+1)%Lo.length],dd=Do[(i+2)%Do.length];
+var ns=target<1500?1:(target<2300?2:(target<2800?3:4)),sn=[];
+for(var j=0;j<ns;j++)sn.push([S[(i*2+j)%S.length],1]);
+function sum(m){return m.reduce(function(a,x){return a+F[x[0]].k*x[1]},0)}
+var mk=sum([].concat(b,l,dd)),sk=sum(sn);
+var sc=(target-sk)/mk;sc=Math.max(0.75,Math.min(2.25,sc));sc=Math.round(sc*4)/4;
+function mk2(m,mul){return m.map(function(x){var q=Math.round(x[1]*mul*100)/100;return {n:F[x[0]].n,a:(q===1?"":q+" x ")+F[x[0]].s,k:Math.round(F[x[0]].k*q),p:F[x[0]].p*q}})}
+var groups=[["Breakfast",mk2(b,sc)],["Lunch",mk2(l,sc)],["Dinner",mk2(dd,sc)],["Snacks",mk2(sn,1)]];
+var tot=0,pr=0;groups.forEach(function(g){g[1].forEach(function(x){tot+=x.k;pr+=x.p})});
+return {g:groups,total:tot,protein:Math.round(pr),sc:sc};
+}
+
+/* ---------- RENDER PLAN ---------- */
+function renderPlan(p,c){
+var days=buildDays(p);
+var gname={lose:"Gentle weight loss",maintain:"Maintain and get fitter",gain:"Build muscle"}[c.goal];
+var h="";
+h+="<div class='card'><h1>Your personal plan</h1><p class='mut'>Goal: <b>"+esc(gname)+"</b> &middot; "+esc(p.lvl)+" level &middot; "+(p.eq==="d"?"dumbbells":"no equipment")+" &middot; "+(p.diet==="veg"?"vegetarian":"all foods")+"</p>";
+h+="<div class='stats'>";
+h+="<div class='stat'><b>"+c.bmi.toFixed(1)+"</b><span>BMI: "+esc(c.cat)+"</span></div>";
+h+="<div class='stat'><b>"+c.target+"</b><span>kcal per day to aim for</span></div>";
+h+="<div class='stat'><b>"+c.protein+" g</b><span>protein per day, about</span></div>";
+h+="<div class='stat'><b>"+c.water+" L</b><span>water per day, about</span></div>";
+h+="</div>";
+h+="<p class='mut'>Healthy BMI range for your height is about <b>"+c.minW+" to "+c.maxW+" kg</b>. Your body burns about "+c.tdee+" kcal a day on a typical day. BMI is only a guide.</p>";
+if(c.wh){var w=c.wh<0.5?"under 0.5, a healthy sign":c.wh<0.6?"between 0.5 and 0.6, a little high":"above 0.6, worth discussing with a doctor";h+="<p class='mut'>Waist-to-height ratio: <b>"+c.wh.toFixed(2)+"</b> ("+w+"). Aim to keep your waist under half your height.</p>"}
+c.notes.forEach(function(n){h+="<div class='note'>"+esc(n)+"</div>"});
+if(p.focus.length){h+="<div class='note'>Your focus areas get extra exercises. Exercise builds the muscles you train, but it cannot remove fat from one spot. Overall eating, sleep and weekly activity decide where fat comes off.</div>"}
+h+="<div class='row noprint'><button class='btn' onclick='window.print()'>Print or save as PDF</button><button class='ghost' id='redo'>Change my answers</button></div></div>";
+days.forEach(function(d,i){
+var m=mealsFor(c.target,p.diet,i);
+h+="<details class='day'"+(i===0?" open":"")+"><summary>"+DAYS[i]+": "+esc(d.t)+"<span>about "+d.m+" min &middot; "+m.total+" kcal planned</span></summary><div class='in'>";
+h+="<h3>Workout</h3><p class='mut'>Warm-up: "+esc(d.extra.wu)+"</p>";
+if(d.extra.circuit)h+="<p class='mut'>"+esc(d.extra.circuit)+"</p>";
+h+="<table><thead><tr><th>Exercise</th><th>Amount</th><th>How to do it</th></tr></thead><tbody>";
+d.rows.forEach(function(r){h+="<tr><td><b>"+esc(r.n)+"</b></td><td>"+esc(r.r)+"</td><td class='mut'>"+esc(r.h)+"</td></tr>"});
+h+="</tbody></table><p class='mut'>Cool-down: "+esc(d.extra.cd)+"</p>";
+if(d.extra.mind){var md=MIND.filter(function(x){return x[0]===d.extra.mind[0]})[0];h+="<p><span class='tag'>Meditation</span> <b>"+esc(md[0])+"</b> for "+d.extra.mind[1]+" min. <span class='mut'>"+esc(md[1])+"</span></p>"}
+h+="<h3>Meals</h3><table><thead><tr><th>Meal</th><th>Food</th><th class='right'>kcal</th></tr></thead><tbody>";
+m.g.forEach(function(g){g[1].forEach(function(x,j){h+="<tr><td>"+(j===0?"<b>"+g[0]+"</b>":"")+"</td><td>"+esc(x.n)+" <span class='mut'>("+esc(x.a)+")</span></td><td class='right'>"+x.k+"</td></tr>"})});
+h+="<tr><td></td><td><b>Day total</b> <span class='mut'>(protein about "+m.protein+" g)</span></td><td class='right'><b>"+m.total+"</b></td></tr></tbody></table>";
+if(m.total<c.target-250)h+="<p class='mut'>You are about "+(c.target-m.total)+" kcal under your target on this day. Add a snack such as a glass of milk, a banana with peanut butter, or a handful of nuts.</p>";
+if(m.sc!==1)h+="<p class='mut'>Portions are scaled to "+m.sc+" x the listed servings to match your daily target.</p>";
+h+="</div></details>";
+});
+h+="<div class='card'><h3>Saturday and Sunday</h3><p>Rest, or enjoy an easy walk, light yoga or 10 minutes of Tai Chi. Keep eating close to your daily target, and drink water. Use the Calorie finder tab for your own meals.</p></div>";
+h+="<div class='note'>Calories shown are typical averages, not exact. Adjust portions slowly based on your hunger, energy and progress. If you lose weight faster than about 0.5 kg a week, eat a little more. This plan is general guidance only and not medical advice.</div>";
+$("#plan").innerHTML=h;
+var r=$("#redo");if(r)r.onclick=function(){show("build")};
+}
+
+/* ---------- TABS ---------- */
+function show(id){
+var panes=document.querySelectorAll(".pane");for(var i=0;i<panes.length;i++)panes[i].classList.add("hide");
+$("#p-"+id).classList.remove("hide");
+var t=document.querySelectorAll(".tab");for(var j=0;j<t.length;j++)t[j].classList.toggle("on",t[j].getAttribute("data-p")===id);
+window.scrollTo(0,0);
+if(id==="plan"&&!$("#plan").innerHTML)$("#plan").innerHTML="<div class='card'><h2>No plan yet</h2><p>Fill in the first tab to build your plan.</p></div>";
+}
+Array.prototype.forEach.call(document.querySelectorAll(".tab"),function(b){b.addEventListener("click",function(){show(b.getAttribute("data-p"))})});
+
+/* ---------- FORM ---------- */
+function checked(sel){return Array.prototype.map.call(document.querySelectorAll(sel+" input:checked"),function(x){return x.value})}
+function readForm(){
+return {a:parseFloat($("#age").value),sex:$("#sex").value,h:parseFloat($("#h").value),w:parseFloat($("#w").value),waist:parseFloat($("#waist").value)||null,act:parseFloat($("#act").value),goal:$("#goal").value,lvl:$("#lvl").value,eq:$("#eq").value,diet:$("#diet").value,focus:checked("#focus"),care:checked("#care")};
+}
+function fillForm(p){
+$("#age").value=p.a;$("#sex").value=p.sex;$("#h").value=p.h;$("#w").value=p.w;$("#waist").value=p.waist||"";$("#act").value=p.act;$("#goal").value=p.goal;$("#lvl").value=p.lvl;$("#eq").value=p.eq;$("#diet").value=p.diet;
+Array.prototype.forEach.call(document.querySelectorAll("#focus input"),function(x){x.checked=has(p.focus||[],x.value)});
+Array.prototype.forEach.call(document.querySelectorAll("#care input"),function(x){x.checked=has(p.care||[],x.value)});
+}
+$("#f").addEventListener("submit",function(e){
+e.preventDefault();
+var p=readForm(),er=$("#ferr");er.classList.add("hide");
+var msg="";
+if(!(p.a>=18))msg="FitWeek is for adults aged 18 and over. For children and teenagers, please speak with a doctor or qualified coach.";
+else if(!(p.h>=120&&p.h<=230))msg="Please enter your height in centimetres, between 120 and 230.";
+else if(!(p.w>=30&&p.w<=250))msg="Please enter your weight in kilograms, between 30 and 250.";
+if(msg){er.textContent=msg;er.classList.remove("hide");return}
+store.set("fw_profile",p);
+renderPlan(p,calc(p));
+show("plan");
+});
+
+/* ---------- FOOD FINDER ---------- */
+var mine=[];
+function renderFoods(){
+var q=$("#q").value.trim().toLowerCase(),c=$("#cat").value,h="";
+FL.forEach(function(x){
+if(c&&x[5]!==c)return;
+if(q&&(x[1]+" "+x[5]).toLowerCase().indexOf(q)<0)return;
+h+="<tr><td><b>"+esc(x[1])+"</b></td><td>"+esc(x[2])+"</td><td class='right'>"+x[3]+"</td><td class='right'>"+x[4]+" g</td><td class='right'><button class='ghost' data-add='"+esc(x[0])+"'>Add</button></td></tr>";
+});
+$("#ft").innerHTML=h||"<tr><td colspan='5' class='mut'>No foods found. Try a simpler word like rice or egg.</td></tr>";
+}
+function renderMine(){
+var k=0,p=0,h="";
+mine.forEach(function(id,i){var f=F[id];k+=f.k;p+=f.p;h+="<div class='row' style='justify-content:space-between;border-bottom:1px solid var(--line);padding:6px 0'><span>"+esc(f.n)+" <span class='mut'>("+esc(f.s)+")</span></span><span>"+f.k+" kcal <button class='ghost' data-del='"+i+"'>Remove</button></span></div>"});
+$("#tot").textContent=k;$("#totp").textContent=p;
+$("#mylist").innerHTML=h||"Nothing added yet.";
+}
+(function(){
+var cats=[];FL.forEach(function(x){if(cats.indexOf(x[5])<0)cats.push(x[5])});
+$("#cat").innerHTML="<option value=''>All foods</option>"+cats.map(function(c){return "<option>"+esc(c)+"</option>"}).join("");
+})();
+$("#q").addEventListener("input",renderFoods);
+$("#cat").addEventListener("change",renderFoods);
+$("#ft").addEventListener("click",function(e){var id=e.target.getAttribute&&e.target.getAttribute("data-add");if(id){mine.push(id);renderMine()}});
+$("#mylist").addEventListener("click",function(e){var i=e.target.getAttribute&&e.target.getAttribute("data-del");if(i!==null&&i!==undefined){mine.splice(parseInt(i,10),1);renderMine()}});
+$("#clr").addEventListener("click",function(){mine=[];renderMine()});
+
+/* ---------- TRACKER ---------- */
+function today(){var d=new Date();return d.getFullYear()+"-"+("0"+(d.getMonth()+1)).slice(-2)+"-"+("0"+d.getDate()).slice(-2)}
+function renderLog(){
+var log=store.get("fw_log")||[];
+if(!log.length){$("#tl").innerHTML="No entries yet.";return}
+log.sort(function(a,b){return a.d<b.d?1:-1});
+var h="<table><thead><tr><th>Date</th><th>Weight</th><th>Waist</th><th>Note</th><th></th></tr></thead><tbody>";
+log.forEach(function(x,i){h+="<tr><td>"+esc(x.d)+"</td><td>"+x.w+" kg</td><td>"+(x.c?x.c+" cm":"")+"</td><td>"+esc(x.n||"")+"</td><td class='right'><button class='ghost' data-rm='"+i+"'>Delete</button></td></tr>"});
+h+="</tbody></table>";
+if(log.length>1){var diff=Math.round((log[0].w-log[log.length-1].w)*10)/10;h+="<p class='mut'>Change since your first entry: <b>"+(diff>0?"+":"")+diff+" kg</b>. Slow and steady is healthy.</p>"}
+$("#tl").innerHTML=h;
+}
+$("#td").value=today();
+$("#tf").addEventListener("submit",function(e){
+e.preventDefault();
+var log=store.get("fw_log")||[];
+log.push({d:$("#td").value,w:parseFloat($("#tw").value),c:parseFloat($("#tc").value)||null,n:$("#tn").value.slice(0,80)});
+store.set("fw_log",log);$("#tw").value="";$("#tc").value="";$("#tn").value="";renderLog();
+});
+$("#tl").addEventListener("click",function(e){
+var r=e.target.getAttribute&&e.target.getAttribute("data-rm");
+if(r===null||r===undefined)return;
+var log=store.get("fw_log")||[];log.sort(function(a,b){return a.d<b.d?1:-1});log.splice(parseInt(r,10),1);store.set("fw_log",log);renderLog();
+});
+function weekKey(){var d=new Date(),day=(d.getDay()+6)%7;d.setDate(d.getDate()-day);return "fw_week_"+d.getFullYear()+"-"+(d.getMonth()+1)+"-"+d.getDate()}
+function renderWeek(){
+var done=store.get(weekKey())||[],h="";
+DAYS.forEach(function(n,i){h+="<label><input type='checkbox' data-wk='"+i+"'"+(has(done,i)?" checked":"")+"> "+n+"</label>"});
+$("#wk").innerHTML=h;
+}
+$("#wk").addEventListener("change",function(e){
+var i=e.target.getAttribute("data-wk");if(i===null)return;
+var done=store.get(weekKey())||[];i=parseInt(i,10);
+var at=done.indexOf(i);if(e.target.checked){if(at<0)done.push(i)}else if(at>-1)done.splice(at,1);
+store.set(weekKey(),done);
+});
+
+/* ---------- INIT ---------- */
+renderFoods();renderMine();renderLog();renderWeek();
+var saved=store.get("fw_profile");
+if(saved&&saved.a){fillForm(saved);renderPlan(saved,calc(saved))}
+})();
+</script>
+</body>
+</html>
