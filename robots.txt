@@ -2,4 +2,4 @@ User-agent: *
 Allow: /
 Disallow: /thanks.html
 
-Sitemap: https://fitweek.netlify.app/sitemap.xml
+Sitemap: https://fitweek-plan.netlify.app/sitemap.xml
